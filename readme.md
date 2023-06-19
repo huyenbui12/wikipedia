@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Ensure `Node 12` installed
+- Ensure `Node 17` installed
 
 ## How to run
 
