@@ -1,0 +1,811 @@
+{
+	"info": {
+		"_postman_id": "1dce9c28-ec67-48fd-a307-1ec00e7c692b",
+		"name": "Testing-wiki",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28058798"
+	},
+	"item": [
+		{
+			"name": "Security",
+			"item": [
+				{
+					"name": "Verify Input Validation for Cross-Site Scripting (XSS)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Inject XSS payload in a parameter\r",
+									"pm.variables.set(\"searchTerm\", \"<script>alert('XSS')</script>\");\r",
+									"\r",
+									"// Send the request with the injected payload\r",
+									"pm.sendRequest(\"https://en.wikipedia.org/w/api.php?action=query&format=json&list=search&srsearch={{searchTerm}}\", function (err, response) {\r",
+									"    // Check for XSS protection\r",
+									"    pm.test(\"No XSS vulnerability\", function () {\r",
+									"        pm.expect(response.text()).to.not.include(\"<script>alert('XSS')</script>\");\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"action\": \"query\",\r\n\t\"format\": \"json\",\r\n\t\"list\": \"search\",\r\n\t\"continue\": \"-||\",\r\n\t\"formatversion\": \"2\",\r\n\t\"srsearch\": \"Software Testing\",\r\n\t\"sroffset\": \"10\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}?action={{wrongaction}}&format={{format}}&list={{list}}&continue={{continue}}&formatversion={{formatversion}}&srsearch={{srsearch}}&sroffset={{sroffset}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"query": [
+								{
+									"key": "action",
+									"value": "{{wrongaction}}"
+								},
+								{
+									"key": "format",
+									"value": "{{format}}"
+								},
+								{
+									"key": "list",
+									"value": "{{list}}"
+								},
+								{
+									"key": "continue",
+									"value": "{{continue}}"
+								},
+								{
+									"key": "formatversion",
+									"value": "{{formatversion}}"
+								},
+								{
+									"key": "srsearch",
+									"value": "{{srsearch}}"
+								},
+								{
+									"key": "sroffset",
+									"value": "{{sroffset}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Input Validation for SQL Injection",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Inject SQL injection payload in a parameter\r",
+									"pm.variables.set(\"searchTerm\", \"Software' OR 1=1; --\");\r",
+									"\r",
+									"// Send the request with the injected payload\r",
+									"pm.sendRequest(\"https://en.wikipedia.org/w/api.php?action=query&format=json&list=search&srsearch={{searchTerm}}\", function (err, response) {\r",
+									"    // Check for SQL injection protection\r",
+									"    pm.test(\"No SQL injection vulnerability\", function () {\r",
+									"        pm.expect(response.text()).to.not.include(\"software' OR 1=1; --\");\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"action\": \"query\",\r\n\t\"format\": \"json\",\r\n\t\"list\": \"search\",\r\n\t\"continue\": \"-||\",\r\n\t\"formatversion\": \"2\",\r\n\t\"srsearch\": \"Software Testing\",\r\n\t\"sroffset\": \"10\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}?action={{wrongaction}}&format={{format}}&list={{list}}&continue={{continue}}&formatversion={{formatversion}}&srsearch={{srsearch}}&sroffset={{sroffset}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"query": [
+								{
+									"key": "action",
+									"value": "{{wrongaction}}"
+								},
+								{
+									"key": "format",
+									"value": "{{format}}"
+								},
+								{
+									"key": "list",
+									"value": "{{list}}"
+								},
+								{
+									"key": "continue",
+									"value": "{{continue}}"
+								},
+								{
+									"key": "formatversion",
+									"value": "{{formatversion}}"
+								},
+								{
+									"key": "srsearch",
+									"value": "{{srsearch}}"
+								},
+								{
+									"key": "sroffset",
+									"value": "{{sroffset}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ErrorHandling",
+			"item": [
+				{
+					"name": "Verify Error Handling for Invalid Action",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify the response status code\r",
+									"pm.test(\"Response status code is 200\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Verify the error message for invalid action\r",
+									"pm.test(\"Response contains error message for invalid action\", function() {\r",
+									"    var responseData = pm.response.json();\r",
+									"    pm.expect(responseData).to.have.property(\"error\");\r",
+									"    pm.expect(responseData.error.code).to.eql(\"badvalue\");\r",
+									"    pm.expect(responseData.error.info).to.include(\"Unrecognized value for parameter\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}?action={{wrongaction}}&format={{format}}&list={{list}}&continue={{continue}}&formatversion={{formatversion}}&srsearch={{srsearch}}&sroffset={{sroffset}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"query": [
+								{
+									"key": "action",
+									"value": "{{wrongaction}}"
+								},
+								{
+									"key": "format",
+									"value": "{{format}}"
+								},
+								{
+									"key": "list",
+									"value": "{{list}}"
+								},
+								{
+									"key": "continue",
+									"value": "{{continue}}"
+								},
+								{
+									"key": "formatversion",
+									"value": "{{formatversion}}"
+								},
+								{
+									"key": "srsearch",
+									"value": "{{srsearch}}"
+								},
+								{
+									"key": "sroffset",
+									"value": "{{sroffset}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Warning with non-support param",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify the response status code\r",
+									"pm.test(\"Response status code is 200\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Verify the warning for deprecated parameter\r",
+									"pm.test(\"Response contains warning for deprecated parameter\", function() {\r",
+									"    var responseData = pm.response.json();\r",
+									"    pm.expect(responseData).to.have.property(\"warnings\");\r",
+									"    pm.expect(responseData.warnings).to.have.property(\"main\");\r",
+									"    pm.expect(responseData.warnings.main).to.have.property(\"warnings\");\r",
+									"    pm.expect(responseData.warnings.main.warnings).to.eql(\"Unrecognized parameter: warning.\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}?action={{action}}&format={{format}}&list={{list}}&continue={{continue}}&formatversion={{formatversion}}&srsearch={{srsearch}}&sroffset={{sroffset}}&warning={{wrongaction}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"query": [
+								{
+									"key": "action",
+									"value": "{{action}}"
+								},
+								{
+									"key": "format",
+									"value": "{{format}}"
+								},
+								{
+									"key": "list",
+									"value": "{{list}}"
+								},
+								{
+									"key": "continue",
+									"value": "{{continue}}"
+								},
+								{
+									"key": "formatversion",
+									"value": "{{formatversion}}"
+								},
+								{
+									"key": "srsearch",
+									"value": "{{srsearch}}"
+								},
+								{
+									"key": "sroffset",
+									"value": "{{sroffset}}"
+								},
+								{
+									"key": "warning",
+									"value": "{{wrongaction}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Normal",
+			"item": [
+				{
+					"name": "Verify API Endpoint and Response",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify response status code\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Verify response content type\r",
+									"pm.test(\"Response content type is JSON\", function() {\r",
+									"    pm.response.to.have.header(\"Content-Type\", \"application/json; charset=utf-8\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"action\": \"query\",\r\n\t\"format\": \"json\",\r\n\t\"list\": \"search\",\r\n\t\"continue\": \"-||\",\r\n\t\"formatversion\": \"2\",\r\n\t\"srsearch\": \"Software Testing\",\r\n\t\"sroffset\": \"10\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}?action={{action}}&format={{format}}&list={{list}}&continue={{continue}}&formatversion={{formatversion}}&srsearch={{srsearch}}&sroffset={{sroffset}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"query": [
+								{
+									"key": "action",
+									"value": "{{action}}"
+								},
+								{
+									"key": "format",
+									"value": "{{format}}"
+								},
+								{
+									"key": "list",
+									"value": "{{list}}"
+								},
+								{
+									"key": "continue",
+									"value": "{{continue}}"
+								},
+								{
+									"key": "formatversion",
+									"value": "{{formatversion}}"
+								},
+								{
+									"key": "srsearch",
+									"value": "{{srsearch}}"
+								},
+								{
+									"key": "sroffset",
+									"value": "{{sroffset}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Search Results for \"Software Testing\"",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify the \"query\" object exists in the response\r",
+									"pm.test(\"Response contains 'query' object\", function() {\r",
+									"    pm.expect(pm.response.json()).to.have.property(\"query\");\r",
+									"});\r",
+									"\r",
+									"// Verify the \"search\" array exists and has at least one item\r",
+									"pm.test(\"Response contains 'search' array with at least one item\", function() {\r",
+									"    pm.expect(pm.response.json().query).to.have.property(\"search\").that.is.an(\"array\").and.has.length.greaterThan(0);\r",
+									"});\r",
+									"\r",
+									"// Verify each item in the \"search\" array has the key \"title\" with value \"Software Testing\"\r",
+									"pm.test(\"Each item in 'search' array has 'title' as 'Software Testing'\", function() {\r",
+									"    var searchResults = pm.response.json().query.search;\r",
+									"    searchResults.forEach(function(result) {\r",
+									"        pm.expect(result).to.have.property(\"title\", \"Software Testing\");\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"action\": \"query\",\r\n\t\"format\": \"json\",\r\n\t\"list\": \"search\",\r\n\t\"continue\": \"-||\",\r\n\t\"formatversion\": \"2\",\r\n\t\"srsearch\": \"Software Testing\",\r\n\t\"sroffset\": \"10\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}?action={{action}}&format={{format}}&list={{list}}&continue={{continue}}&formatversion={{formatversion}}&srsearch={{srsearch}}&sroffset={{sroffset}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"query": [
+								{
+									"key": "action",
+									"value": "{{action}}"
+								},
+								{
+									"key": "format",
+									"value": "{{format}}"
+								},
+								{
+									"key": "list",
+									"value": "{{list}}"
+								},
+								{
+									"key": "continue",
+									"value": "{{continue}}"
+								},
+								{
+									"key": "formatversion",
+									"value": "{{formatversion}}"
+								},
+								{
+									"key": "srsearch",
+									"value": "{{srsearch}}"
+								},
+								{
+									"key": "sroffset",
+									"value": "{{sroffset}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Pagination Offset",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify the \"continue\" object exists in the response\r",
+									"pm.test(\"Response contains 'continue' object\", function() {\r",
+									"    pm.expect(pm.response.json()).to.have.property(\"continue\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains 'batchcomplete' object\", function() {\r",
+									"    pm.expect(pm.response.json()).to.have.property(\"batchcomplete\");\r",
+									"});\r",
+									"\r",
+									"// Verify the \"continue\" value is different for each request\r",
+									"pm.test(\"Each request has a different 'continue' value\", function() {\r",
+									"    var continueValue = pm.response.json().continue;\r",
+									"    pm.expect(continueValue).to.exist;\r",
+									"    \r",
+									"    pm.globals.set(\"continueValue\", continueValue); // Store the value for subsequent requests\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"action\": \"query\",\r\n\t\"format\": \"json\",\r\n\t\"list\": \"search\",\r\n\t\"continue\": \"-||\",\r\n\t\"formatversion\": \"2\",\r\n\t\"srsearch\": \"Software Testing\",\r\n\t\"sroffset\": \"10\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}?action={{action}}&format={{format}}&list={{list}}&continue={{continue}}&formatversion={{formatversion}}&srsearch={{srsearch}}&sroffset={{sroffset}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"query": [
+								{
+									"key": "action",
+									"value": "{{action}}"
+								},
+								{
+									"key": "format",
+									"value": "{{format}}"
+								},
+								{
+									"key": "list",
+									"value": "{{list}}"
+								},
+								{
+									"key": "continue",
+									"value": "{{continue}}"
+								},
+								{
+									"key": "formatversion",
+									"value": "{{formatversion}}"
+								},
+								{
+									"key": "srsearch",
+									"value": "{{srsearch}}"
+								},
+								{
+									"key": "sroffset",
+									"value": "{{sroffset}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "InputValidation",
+			"item": [
+				{
+					"name": "Verify Required Parameters and Response Structure",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify the response status code\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Verify the response contains the required properties\r",
+									"pm.test(\"Response contains the required properties\", function () {\r",
+									"    pm.expect(pm.response.json()).to.have.property(\"query\");\r",
+									"    pm.expect(pm.response.json().query).to.have.property(\"searchinfo\");\r",
+									"    pm.expect(pm.response.json().query).to.have.property(\"search\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"action\": \"query\",\r\n\t\"format\": \"json\",\r\n\t\"list\": \"search\",\r\n\t\"continue\": \"-||\",\r\n\t\"formatversion\": \"2\",\r\n\t\"srsearch\": \"Software Testing\",\r\n\t\"sroffset\": \"10\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}?action={{action}}&format={{format}}&list={{list}}&continue={{continue}}&formatversion={{formatversion}}&srsearch={{srsearch}}&sroffset={{sroffset}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"query": [
+								{
+									"key": "action",
+									"value": "{{action}}"
+								},
+								{
+									"key": "format",
+									"value": "{{format}}"
+								},
+								{
+									"key": "list",
+									"value": "{{list}}"
+								},
+								{
+									"key": "continue",
+									"value": "{{continue}}"
+								},
+								{
+									"key": "formatversion",
+									"value": "{{formatversion}}"
+								},
+								{
+									"key": "srsearch",
+									"value": "{{srsearch}}"
+								},
+								{
+									"key": "sroffset",
+									"value": "{{sroffset}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Performance",
+			"item": [
+				{
+					"name": "Verify Response Time under Normal Load",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Measure the response time\r",
+									"var responseTime = pm.response.responseTime;\r",
+									"\r",
+									"// Log the response time\r",
+									"console.log(\"Response Time: \" + responseTime + \" ms\");\r",
+									"\r",
+									"// Assert the response time meets the performance threshold\r",
+									"pm.test(\"Response Time is within threshold\", function() {\r",
+									"    pm.expect(responseTime).to.be.below(500); // Set your desired threshold value\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"action\": \"query\",\r\n\t\"format\": \"json\",\r\n\t\"list\": \"search\",\r\n\t\"continue\": \"-||\",\r\n\t\"formatversion\": \"2\",\r\n\t\"srsearch\": \"Software Testing\",\r\n\t\"sroffset\": \"10\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}?action={{action}}&format={{format}}&list={{list}}&continue={{continue}}&formatversion={{formatversion}}&srsearch={{srsearch}}&sroffset={{sroffset}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"query": [
+								{
+									"key": "action",
+									"value": "{{action}}"
+								},
+								{
+									"key": "format",
+									"value": "{{format}}"
+								},
+								{
+									"key": "list",
+									"value": "{{list}}"
+								},
+								{
+									"key": "continue",
+									"value": "{{continue}}"
+								},
+								{
+									"key": "formatversion",
+									"value": "{{formatversion}}"
+								},
+								{
+									"key": "srsearch",
+									"value": "{{srsearch}}"
+								},
+								{
+									"key": "sroffset",
+									"value": "{{sroffset}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "action",
+			"value": "query",
+			"type": "string"
+		},
+		{
+			"key": "base_url",
+			"value": "https://en.wikipedia.org/w/api.php",
+			"type": "string"
+		},
+		{
+			"key": "format",
+			"value": "json",
+			"type": "string"
+		},
+		{
+			"key": "list",
+			"value": "search",
+			"type": "string"
+		},
+		{
+			"key": "srsearch",
+			"value": "Software Testing",
+			"type": "string"
+		},
+		{
+			"key": "sroffset",
+			"value": "10",
+			"type": "string"
+		},
+		{
+			"key": "continue",
+			"value": "-||",
+			"type": "string"
+		},
+		{
+			"key": "formatversion",
+			"value": "2",
+			"type": "string"
+		},
+		{
+			"key": "wrongaction",
+			"value": "wrong",
+			"type": "string"
+		}
+	]
+}

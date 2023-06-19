@@ -55,6 +55,11 @@ export const BASE_URL = "***"
 
 - Select `Run in debug` in `Run` tab of VSCode 
 
+## API testing
+This repo contains api-testing folder including:
+- Collection
+- Test data CSV file
+
 ## Documentation
 
 - [WebdriverIO Documentation](https://webdriver.io/docs/gettingstarted.html)
