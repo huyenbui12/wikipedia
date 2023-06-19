@@ -3,6 +3,7 @@
 ## Prerequisites
 
 - Ensure `Node 17` installed
+- Ensure `Chrome version 114` installed
 
 ## How to run
 
