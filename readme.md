@@ -34,7 +34,7 @@ export const BASE_URL = "***"
 {
     suites: {
         ...
-        apply: ['./test/specs/search-specific-text.js']
+        search: ['./test/specs/search-specific-text.js']
     }
 }
 ```
